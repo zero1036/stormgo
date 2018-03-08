@@ -1,4 +1,4 @@
-package spouts;
+package dependable.spouts;
 
 import java.util.Map;
 

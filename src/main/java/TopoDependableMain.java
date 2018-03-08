@@ -1,6 +1,8 @@
-import bolts.*;
+import dependable.bolts.TestFirstBolt;
+import dependable.bolts.TestSecondBolt;
+import dependable.bolts.TestThirdBolt;
+import dependable.spouts.TestSpout;
 import org.apache.storm.tuple.Fields;
-import spouts.*;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.topology.TopologyBuilder;
@@ -9,7 +11,7 @@ import org.apache.storm.utils.Utils;
 /**
  * Created by Thinkpads on 2018/3/8.
  */
-public class TopoMain {
+public class TopoDependableMain {
 
     private static final String SENTENCE_SPOUT_ID = "test-spout";
     private static final String FIRST_BOLT_ID = "test-bolt";
@@ -61,6 +63,5 @@ public class TopoMain {
         Utils.sleep(10000);
         cluster.killTopology(TOPOLOGY_NAME);
         cluster.shutdown();
-
     }
 }

@@ -1,4 +1,4 @@
-package bolts;
+package official.bolts;
 
 import java.util.Map;
 
@@ -15,7 +15,7 @@ import org.apache.storm.tuple.Values;
  *
  * @author soul
  */
-public class TestFirstBolt extends BaseRichBolt {
+public class SplitSentenceBolt extends BaseRichBolt {
     //BaseRichBolt是IComponent和IBolt接口的实现
     //继承这个类，就不用去实现本例不关心的方法
 
@@ -41,24 +41,11 @@ public class TestFirstBolt extends BaseRichBolt {
      */
     public void execute(Tuple input) {
         // TODO Auto-generated method stub
-//        String sentence = input.getStringByField("sentence");
-//        String[] words = sentence.split(" ");
-//        for (String word : words) {
-//            this.collector.emit(input, new Values(word));//向下一个bolt发射数据
-//        }
-
-
         String sentence = input.getStringByField("sentence");
-        System.out.println("bolt1 is workding:" + sentence);
-        if (sentence.length() == 1) {
-            this.collector.emit(input, new Values(1, sentence));//向下一个bolt发射数据
-
-        } else if (sentence.length() == 2) {
-            this.collector.emit(input, new Values(2, sentence));//向下一个bolt发射数据
+        String[] words = sentence.split(" ");
+        for (String word : words) {
+            this.collector.emit(new Values(word));//向下一个bolt发射数据
         }
-        this.collector.ack(input);
-
-
     }
 
     /**
@@ -66,7 +53,7 @@ public class TestFirstBolt extends BaseRichBolt {
      */
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
         // TODO Auto-generated method stub
-        declarer.declare(new Fields("firstGroup", "firstValue"));
+        declarer.declare(new Fields("word"));
     }
 
 }

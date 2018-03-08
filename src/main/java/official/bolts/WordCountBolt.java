@@ -1,4 +1,4 @@
-package bolts;
+package official.bolts;
 
 import java.util.HashMap;
 import java.util.Map;

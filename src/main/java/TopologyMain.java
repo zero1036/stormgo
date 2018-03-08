@@ -1,6 +1,10 @@
 
-import bolts.*;
-import spouts.*;
+import official.bolts.*;
+import official.bolts.ReportBolt;
+import official.bolts.SplitSentenceBolt;
+import official.bolts.WordCountBolt;
+import official.spouts.SentenceSpout;
+import official.spouts.*;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
 import org.apache.storm.topology.TopologyBuilder;

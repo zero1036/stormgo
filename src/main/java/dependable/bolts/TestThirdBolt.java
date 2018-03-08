@@ -1,4 +1,4 @@
-package bolts;
+package dependable.bolts;
 
 import java.util.Map;
 
@@ -11,15 +11,15 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 
 /**
- * 订阅sentence spout发射的tuple流，实现分割单词
- *
  * @author soul
  */
-public class SplitSentenceBolt extends BaseRichBolt {
+public class TestThirdBolt extends BaseRichBolt {
     //BaseRichBolt是IComponent和IBolt接口的实现
     //继承这个类，就不用去实现本例不关心的方法
 
     private OutputCollector collector;
+
+    private String result = "";
 
     /**
      * prepare()方法类似于ISpout 的open()方法。
@@ -30,7 +30,6 @@ public class SplitSentenceBolt extends BaseRichBolt {
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
         // TODO Auto-generated method stub
         this.collector = collector;
-
     }
 
     /**
@@ -40,12 +39,12 @@ public class SplitSentenceBolt extends BaseRichBolt {
      * 并将该值拆分成单个的词,然后按单词发出新的tuple。
      */
     public void execute(Tuple input) {
-        // TODO Auto-generated method stub
-        String sentence = input.getStringByField("sentence");
-        String[] words = sentence.split(" ");
-        for (String word : words) {
-            this.collector.emit(new Values(word));//向下一个bolt发射数据
-        }
+        String value = input.getStringByField("secondValue");
+        result = String.format("%s-%s", result, value);
+
+        System.out.println("bolt3 is working:" + result);
+
+        this.collector.ack(input);
     }
 
     /**
@@ -53,7 +52,6 @@ public class SplitSentenceBolt extends BaseRichBolt {
      */
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
         // TODO Auto-generated method stub
-        declarer.declare(new Fields("word"));
     }
 
 }

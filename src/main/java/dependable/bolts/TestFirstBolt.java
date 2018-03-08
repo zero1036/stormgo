@@ -1,4 +1,4 @@
-package bolts;
+package dependable.bolts;
 
 import java.util.Map;
 
@@ -11,15 +11,15 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 
 /**
+ * 订阅sentence spout发射的tuple流，实现分割单词
+ *
  * @author soul
  */
-public class TestThirdBolt extends BaseRichBolt {
+public class TestFirstBolt extends BaseRichBolt {
     //BaseRichBolt是IComponent和IBolt接口的实现
     //继承这个类，就不用去实现本例不关心的方法
 
     private OutputCollector collector;
-
-    private String result = "";
 
     /**
      * prepare()方法类似于ISpout 的open()方法。
@@ -30,6 +30,7 @@ public class TestThirdBolt extends BaseRichBolt {
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
         // TODO Auto-generated method stub
         this.collector = collector;
+
     }
 
     /**
@@ -39,12 +40,25 @@ public class TestThirdBolt extends BaseRichBolt {
      * 并将该值拆分成单个的词,然后按单词发出新的tuple。
      */
     public void execute(Tuple input) {
-        String value = input.getStringByField("secondValue");
-        result = String.format("%s-%s", result, value);
+        // TODO Auto-generated method stub
+//        String sentence = input.getStringByField("sentence");
+//        String[] words = sentence.split(" ");
+//        for (String word : words) {
+//            this.collector.emit(input, new Values(word));//向下一个bolt发射数据
+//        }
 
-        System.out.println("bolt3 is working:" + result);
 
+        String sentence = input.getStringByField("sentence");
+        System.out.println("bolt1 is workding:" + sentence);
+        if (sentence.length() == 1) {
+            this.collector.emit(input, new Values(1, sentence));//向下一个bolt发射数据
+
+        } else if (sentence.length() == 2) {
+            this.collector.emit(input, new Values(2, sentence));//向下一个bolt发射数据
+        }
         this.collector.ack(input);
+
+
     }
 
     /**
@@ -52,6 +66,7 @@ public class TestThirdBolt extends BaseRichBolt {
      */
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
         // TODO Auto-generated method stub
+        declarer.declare(new Fields("firstGroup", "firstValue"));
     }
 
 }

@@ -1,4 +1,4 @@
-package bolts;
+package dependable.bolts;
 
 import java.util.Map;
 
