@@ -48,7 +48,7 @@ public class TopologyMain {
         // SplitSentenceBolt --> WordCountBolt
 
         //fieldsGrouping将含有特定数据的tuple路由到特殊的bolt实例中
-        //这里fieldsGrouping()方法保证所有“word”字段相同的tuuple会被路由到同一个WordCountBolt实例中
+        //这里fieldsGrouping()方法保证所有“word”字段相同的tuuple会被路由到同一个WordCountBolt实例中，注意是同一个bolt的实例，而不是同一个bolt
         //builder.setBolt(COUNT_BOLT_ID, countBolt).fieldsGrouping( SPLIT_BOLT_ID, new Fields("word"));
 
         //WordCountBolt单词计数器设置4个Executeor(线程)
