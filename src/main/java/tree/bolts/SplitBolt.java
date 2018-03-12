@@ -1,4 +1,4 @@
-package dependable.bolts;
+package tree.bolts;
 
 import java.util.Map;
 
@@ -15,7 +15,7 @@ import org.apache.storm.tuple.Values;
  *
  * @author soul
  */
-public class TestFirstBolt extends BaseRichBolt {
+public class SplitBolt extends BaseRichBolt {
     //BaseRichBolt是IComponent和IBolt接口的实现
     //继承这个类，就不用去实现本例不关心的方法
 
@@ -41,15 +41,7 @@ public class TestFirstBolt extends BaseRichBolt {
         String sentence = input.getStringByField("sentence");
         System.out.println("bolt1 is workding:" + sentence);
 
-        if (sentence.length() == 1) {
-            this.collector.emit(input, new Values(1, sentence));//向下一个bolt发射数据
-
-        } else if (sentence.length() == 2) {
-            this.collector.emit(input, new Values(2, sentence));//向下一个bolt发射数据
-        } else {
-            //nothing to do but 丢弃其他长度的单词
-        }
-        //无论处理结果如何，ack确认所有元组，因此被丢弃的元组也会被确认
+        this.collector.emit(input, new Values(sentence));//向下一个bolt发射数据
         this.collector.ack(input);
     }
 
@@ -57,8 +49,7 @@ public class TestFirstBolt extends BaseRichBolt {
      * 定义一个元组流,每个包含一个字段("firstGroup", "firstValue")。
      */
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        // TODO Auto-generated method stub
-        declarer.declare(new Fields("firstGroup", "firstValue"));
+        declarer.declare(new Fields("word"));
     }
 
 }

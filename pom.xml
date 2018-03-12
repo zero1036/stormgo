@@ -36,11 +36,23 @@
         </repository>
     </repositories>
     <dependencies>
+        <!--guava-->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>22.0</version>
+        </dependency>
         <!-- Storm Dependency -->
         <dependency>
             <groupId>org.apache.storm</groupId>
             <artifactId>storm-core</artifactId>
             <version>1.2.1</version>
+        </dependency>
+        <!--storm-rabbitmq-->
+        <dependency>
+            <groupId>io.latent</groupId>
+            <artifactId>storm-rabbitmq</artifactId>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 </project>

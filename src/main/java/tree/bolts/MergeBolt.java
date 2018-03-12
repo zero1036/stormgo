@@ -1,4 +1,4 @@
-package dependable.bolts;
+package tree.bolts;
 
 import java.util.Map;
 
@@ -11,15 +11,15 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 
 /**
- * 订阅sentence spout发射的tuple流，实现筛选不同长度的单词
- *
  * @author soul
  */
-public class TestFirstBolt extends BaseRichBolt {
+public class MergeBolt extends BaseRichBolt {
     //BaseRichBolt是IComponent和IBolt接口的实现
     //继承这个类，就不用去实现本例不关心的方法
 
     private OutputCollector collector;
+
+    private String result = "";
 
     /**
      * prepare()方法类似于ISpout 的open()方法。
@@ -28,37 +28,31 @@ public class TestFirstBolt extends BaseRichBolt {
      * 所以prepare()方法只保存OutputCollector对象的引用。
      */
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
+        // TODO Auto-generated method stub
         this.collector = collector;
     }
 
     /**
-     * 核心功能是在类IBolt定义execute()方法，这个方法是IBolt接口中定义。
+     * SplitSentenceBolt核心功能是在类IBolt定义execute()方法，这个方法是IBolt接口中定义。
      * 每次Bolt从流接收一个订阅的tuple，都会调用这个方法。
-     * 本例中,收到的元组中实现筛选不同长度的单词
-     * 然后将单词长度及单词本身生成新的tuple并发出。
+     * 本例中,收到的元组中查找“sentence”的值,
+     * 并将该值拆分成单个的词,然后按单词发出新的tuple。
      */
     public void execute(Tuple input) {
-        String sentence = input.getStringByField("sentence");
-        System.out.println("bolt1 is workding:" + sentence);
+        String value = input.getStringByField("word");
+        result = String.format("%s-%s", result, value);
 
-        if (sentence.length() == 1) {
-            this.collector.emit(input, new Values(1, sentence));//向下一个bolt发射数据
+        System.out.println("bolt3 is working:" + result);
 
-        } else if (sentence.length() == 2) {
-            this.collector.emit(input, new Values(2, sentence));//向下一个bolt发射数据
-        } else {
-            //nothing to do but 丢弃其他长度的单词
-        }
-        //无论处理结果如何，ack确认所有元组，因此被丢弃的元组也会被确认
+        this.collector.emit(input, new Values(result));
         this.collector.ack(input);
     }
 
     /**
-     * 定义一个元组流,每个包含一个字段("firstGroup", "firstValue")。
+     * plitSentenceBolt类定义一个元组流,每个包含一个字段(“merge”)。
      */
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        // TODO Auto-generated method stub
-        declarer.declare(new Fields("firstGroup", "firstValue"));
+        declarer.declare(new Fields("merge"));
     }
 
 }

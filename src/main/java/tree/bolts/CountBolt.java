@@ -1,4 +1,4 @@
-package dependable.bolts;
+package tree.bolts;
 
 import java.util.Map;
 
@@ -13,11 +13,13 @@ import org.apache.storm.tuple.Values;
 /**
  * @author soul
  */
-public class TestSecondBolt extends BaseRichBolt {
+public class CountBolt extends BaseRichBolt {
     //BaseRichBolt是IComponent和IBolt接口的实现
     //继承这个类，就不用去实现本例不关心的方法
 
     private OutputCollector collector;
+
+    private Integer count = 0;
 
     /**
      * prepare()方法类似于ISpout 的open()方法。
@@ -32,31 +34,17 @@ public class TestSecondBolt extends BaseRichBolt {
      * 核心功能：分组长度为1的单词后添加*号作为新的tuple并发出；分组长度为2的单词不处理直接作为tuple发出
      */
     public void execute(Tuple input) {
-        Integer group = input.getIntegerByField("firstGroup");
-        String value = input.getStringByField("firstValue");
-        System.out.println("bolt2 is workding:" + value);
+        this.collector.emit(input, new Values(this.count));
+        this.count += 1;
 
-        if (group == 1) {
-            value = String.format("%s*", value);
-        }
-        this.collector.emit(input, new Values(value));
-
-//        ack全部情况
-//        this.collector.ack(input);
-
-        //ack 分组为1的元组，fail分组为2的元组
-        if (group == 1) {
-            this.collector.ack(input);
-        } else {
-            this.collector.fail(input);
-        }
+        this.collector.ack(input);
     }
 
     /**
-     * plitSentenceBolt类定义一个元组流,每个包含一个字段(“secondValue”)。
+     * plitSentenceBolt类定义一个元组流,每个包含一个字段(“count”)。
      */
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("secondValue"));
+        declarer.declare(new Fields("count"));
     }
 
 }

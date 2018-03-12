@@ -1,7 +1,9 @@
-import dependable.bolts.TestFirstBolt;
-import dependable.bolts.TestSecondBolt;
-import dependable.bolts.TestThirdBolt;
-import dependable.spouts.TestSpout;
+
+import tree.bolts.CountBolt;
+import tree.bolts.MergeBolt;
+import tree.bolts.ReportBolt;
+import tree.bolts.SplitBolt;
+import tree.spouts.TreeSpout;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
@@ -11,12 +13,13 @@ import org.apache.storm.utils.Utils;
 /**
  * Created by Thinkpads on 2018/3/8.
  */
-public class TopoDependableMain {
+public class TreeMain {
 
     private static final String SENTENCE_SPOUT_ID = "test-spout";
-    private static final String FIRST_BOLT_ID = "test-bolt";
-    private static final String SECOND_BOLT_ID = "second-bolt";
-    private static final String THIRD_BOLT_ID = "third-bolt";
+    private static final String SPLIT_BOLT_ID = "split-bolt";
+    private static final String COUNT_BOLT_ID = "count-bolt";
+    private static final String MERGE_BOLT_ID = "merge-bolt";
+    private static final String REPORT_BOLT_ID = "report-bolt";
     private static final String TOPOLOGY_NAME = "test-count-topology";
 
     public static void main(String[] args) //throws Exception
@@ -24,10 +27,11 @@ public class TopoDependableMain {
         //System.out.println( "Hello World!" );
         //实例化spout和bolt
 
-        TestSpout spout = new TestSpout();
-        TestFirstBolt firstBolt = new TestFirstBolt();
-        TestSecondBolt secondBolt = new TestSecondBolt();
-        TestThirdBolt thirdBolt = new TestThirdBolt();
+        TreeSpout spout = new TreeSpout();
+        SplitBolt splitBolt = new SplitBolt();
+        CountBolt countBolt = new CountBolt();
+        MergeBolt mergeBolt = new MergeBolt();
+        ReportBolt reportBolt = new ReportBolt();
 
         TopologyBuilder builder = new TopologyBuilder();//创建了一个TopologyBuilder实例
 
@@ -43,12 +47,15 @@ public class TopoDependableMain {
         //注册一个bolt并订阅sentence发射出的数据流，shuffleGrouping方法告诉Storm要将SentenceSpout发射的tuple随机均匀的分发给SplitSentenceBolt的实例
         //builder.setBolt(FIRST_BOLT_ID, splitBolt).shuffleGrouping(SENTENCE_SPOUT_ID);
 
-        builder.setBolt(FIRST_BOLT_ID, firstBolt, 2).shuffleGrouping(SENTENCE_SPOUT_ID);
+        builder.setBolt(SPLIT_BOLT_ID, splitBolt, 1).shuffleGrouping(SENTENCE_SPOUT_ID);
 
-        builder.setBolt(SECOND_BOLT_ID, secondBolt, 2).fieldsGrouping(FIRST_BOLT_ID, new Fields("firstGroup"));
+        builder.setBolt(COUNT_BOLT_ID, countBolt, 1).shuffleGrouping(SPLIT_BOLT_ID);
+        builder.setBolt(MERGE_BOLT_ID, mergeBolt, 1).shuffleGrouping(SPLIT_BOLT_ID);
 
         //globalGrouping是把WordCountBolt发射的所有tuple路由到唯一的ReportBolt
-        builder.setBolt(THIRD_BOLT_ID, thirdBolt, 3).globalGrouping(SECOND_BOLT_ID);
+        builder.setBolt(REPORT_BOLT_ID, reportBolt, 1)
+                .shuffleGrouping(COUNT_BOLT_ID)
+                .shuffleGrouping(MERGE_BOLT_ID);
 
         // SplitSentenceBolt --> WordCountBolt
 

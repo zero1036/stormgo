@@ -1,4 +1,4 @@
-package dependable.spouts;
+package tree.spouts;
 
 import java.util.Map;
 
@@ -15,7 +15,7 @@ import org.apache.storm.utils.Utils;
  *
  * @author soul
  */
-public class TestSpout extends BaseRichSpout {
+public class TreeSpout extends BaseRichSpout {
 
     //BaseRichSpout是ISpout接口和IComponent接口的简单实现，接口对用不到的方法提供了默认的实现
 
